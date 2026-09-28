@@ -96,18 +96,18 @@ def get_dealerships(request, state="All"):
 
 
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
-def get_dealer_reviews(request,dealer_id):
+def get_dealer_reviews(request, dealer_id):
+    # if dealer id has been provided
     if(dealer_id):
-        endpoint = f"fetchReviews/dealer/{dealer_id}"
-        dealer_reviews = get_request(endpoint)
-        for a_review in dealer_reviews:
-            review_sentiment_result = analyze_review_sentiments(a_review['review'])
-            print(review_sentiment_result)
-            a_review['sentiment'] =  review_sentiment_result['sentiment']
-        return JsonResponse({"status":200, "reviews": dealer_reviews})
+        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
+        reviews = get_request(endpoint)
+        for review_detail in reviews:
+            response = analyze_review_sentiments(review_detail['review'])
+            print(response)
+            review_detail['sentiment'] = response['sentiment']
+        return JsonResponse({"status":200,"reviews":reviews})
     else:
-        return JsonResponse({"status": 400, "message": "dealer id either missing or does NOT exist!"})
-
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 # ...
 
@@ -115,11 +115,11 @@ def get_dealer_reviews(request,dealer_id):
 # Create a `get_dealer_details` view to render the dealer details
 def get_dealer_details(request, dealer_id):
     if(dealer_id):
-        endpoint= f"/fetchDealer/{dealer_id}"
-        dealer_details = get_request(endpoint)
-        return JsonResponse({"status": 200, "dealer": dealer_details})
+        endpoint = "/fetchDealer/"+str(dealer_id)
+        dealership = get_request(endpoint)
+        return JsonResponse({"status":200,"dealer":dealership})
     else:
-        return JsonResponse({"status": 400, "message": "dealer id either missing or does NOT exist!"})
+        return JsonResponse({"status":400,"message":"Bad Request"})
 # ...
 
 # Create a `add_review` view to submit a review
